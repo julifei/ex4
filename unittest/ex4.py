@@ -16,7 +16,13 @@ def ex4(image_array, border_x, border_y):
         raise NotImplementedError
 
     # ValueError
-    if isinstance(border_x[0], int) or isinstance(border_x[1], int) or isinstance(border_y[0], int) or isinstance(border_y[1], int) is False:
+    if isinstance(border_x[0], int) is False:
+        raise ValueError
+    if isinstance(border_x[1], int) is False:
+        raise ValueError
+    if isinstance(border_y[0], int) is False:
+        raise ValueError
+    if isinstance(border_y[1], int) is False:
         raise ValueError
     if border_x[0] < 1 or border_x[1] < 1 or border_y[0] < 1 or border_y[1] < 1:
         raise ValueError
@@ -28,18 +34,20 @@ def ex4(image_array, border_x, border_y):
         # Make copy from image_array
         input_array = np.copy(image_array)
         # cut top part
-        input_array[:border_x[1], :] = 0
+        input_array[:border_x[0], :] = 0
         # cut bottom
-        input_array[input_array.shape[0] - border_x[0]:, :] = 0
+        input_array[input_array.shape[0] - border_x[1]: input_array.shape[0], :] = 0
         # cut left border
-        input_array[border_x[1]:input_array.shape[0] - border_x[0], :border_y[0]] = 0
+        input_array[border_x[0]:input_array.shape[0] - border_x[1], :border_y[0]] = 0
         # cut right border
-        input_array[border_x[1]:input_array.shape[0] - border_x[0], input_array.shape[1] - border_y[1]:] = 0
+        input_array[border_x[0]:input_array.shape[0] - border_x[1], input_array.shape[1] - border_y[1]:] = 0
 
         # Get known_array from input_array by using boolean mask
         known_array = input_array > 0
-        # convert to int, so everything <= 0 is 0 and everything > 0 is 1
-        known_array = known_array.astype(int)
+        # Convert to dtype of image_array
+        known_array = known_array.astype(image_array.dtype)
+        # set everything whats 0 inside to 1
+        known_array[border_x[0]:known_array.shape[0] - border_x[1], border_y[0]:known_array.shape[1] - border_y[1]] = 1
 
         # Get target array
         # Make Boolean Mask with all 0 = True and all 1 = False
